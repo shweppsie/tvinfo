@@ -163,7 +163,7 @@ def rename(f,t):
 	"Attempt to rename a file, produce an error if it cannot be renamed, or if the destination exists to stderr, but dont raise an exception"
 	if f==t:
                 if debug:
-                        print "source and dest file are the same"
+                        print "DEBUG: source and dest file are the same"
 		return
 	print "%s: %s" % (os.path.basename(f),os.path.basename(t))
 	if noact:
@@ -232,14 +232,14 @@ def process_file(fname,title,outname):
 
         # XXX: series search doesn't use series_patterns() yet...
         if debug:
-                print "Searching for ", name
+                print "DEBUG: Searching for ", name
         t = tvinfo.TVFactory("thetvdb","13937A4BBADA99FC")
         series_candidates = t.series_search(name)
         series = None
 
         for x in series_candidates:
                 if debug:
-                        print "series candidate: '" + x.get_title() + "'"
+                        print "DEBUG: series candidate: '" + x.get_title() + "'"
                 if x.get_title().lower().strip() in [y.lower().strip() for y in series_patterns(name)]:
                         series = x
                         break
