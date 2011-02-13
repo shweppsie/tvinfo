@@ -249,7 +249,7 @@ def process_file(fname,title,outname):
                 print "However, the series search for '" + name + "' found:"
                 for s in [x.get_title().lower().strip() for x in series_candidates]:
                         print " '" + s + "'"
-                print "Use --name to select a series"
+                print "Use --title to select a series"
                 return
 
         ep = series.get_episode(season = season, episode = episode)
