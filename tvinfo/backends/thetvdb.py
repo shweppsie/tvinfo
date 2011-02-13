@@ -90,7 +90,7 @@ class TheTVDBBackend:
                 series.set_overview(tvdbinfo.get("Overview", ""))
 
                 if tvdbinfo.has_key("banner"):
-                        series.banner_uri = tvdbinfo["banner"]
+                        series.set_banner_uris([tvdbinfo["banner"]])
 
        
         def __download_series(self, seriesid, language = "en"):
