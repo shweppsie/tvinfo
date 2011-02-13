@@ -164,3 +164,4 @@ def parse_filename(fname):
 	# The filename follows no known pattern.
 	return None
 
+# vim: set sw=8 tabstop=8 softtabstop=8 expandtab :
