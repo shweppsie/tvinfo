@@ -317,7 +317,7 @@ def process_file_epguides(fname,title,outname):
 	name,season,episode,ext = ret
 
 	if title is not None:
-		name=re.sub(r"[^A-Za-z0-9_]","",title)
+                name = title
 
 	# Because of the cache, we might not have the information, so we
 	# may want to run this again if we can't find the information we're
