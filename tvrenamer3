@@ -458,3 +458,5 @@ if __name__=="__main__":
                         process_file_epguides(i,title,name)
 
 	save_cache(series_info)
+
+# vim: set sw=8 tabstop=8 softtabstop=8 expandtab :
