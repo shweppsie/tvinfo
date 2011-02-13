@@ -226,7 +226,7 @@ def process_file(fname,title,outname):
         name,season,episode,ext = ret
 
         if title is not None:
-                name = re.sub(r"[^A-Za-z0-9_]","",title)
+                name = title
 
         # Use the tv module to search for the series name
 
