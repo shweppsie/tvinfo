@@ -2,6 +2,8 @@
 
 tools for performing TV information lookup
 
+(c) 2011 Nathan Overall <shweppsie@gmail.com>
+
 (c) 2008 Scott Raynel <scottraynel@gmail.com>
 
 (c) 2007-2008 Perry Lorier
