@@ -41,6 +41,7 @@ import getopt
 import glob
 import pickle
 import htmlentitydefs
+import urllib2
 
 import tvinfo
 
@@ -212,7 +213,7 @@ def series_patterns(name):
 
 	return ret
 
-def process_file(fname,title,outname):
+def process_file(fname,title,outname,banner):
         f = os.path.realpath(fname)
         dir = os.path.dirname(f)
         fname = os.path.basename(f)
@@ -251,6 +252,16 @@ def process_file(fname,title,outname):
                         print " '" + s + "'"
                 print "Use --title to select a series"
                 return
+
+        if banner:
+                if debug:
+                        print "DEBUG: Fetching Banner"
+                url = series.get_banner_uris()[0]
+                u = urllib2.urlopen(url)
+                image = open(dir+"/banner.jpg",'w')
+                image.write(u.read())
+                image.close()
+                u.close()
 
         ep = series.get_episode(season = season, episode = episode)
 
@@ -389,6 +400,8 @@ def usage(argv0):
 	print "--no-act		Don't actually rename the files, just display what"
 	print "			what would be done"
 	print
+        print "--fetch-banner   Fetch banner and save it as banner.jpg"
+        print
 	print "--format=%s" % repr(expando)
 	print "			Format to rename to"
 	print
@@ -405,7 +418,7 @@ if __name__=="__main__":
 	try:
 		args,files=getopt.gnu_getopt(sys.argv[1:],"nh",[
 			"no-act","format=","help","title=","expand","no-expand",
-			"name=","debug","epguides"
+			"name=","debug","epguides","fetch-banner"
 			])
 	except getopt.GetoptError, e:
 		print e
@@ -419,6 +432,7 @@ if __name__=="__main__":
 	title=None
 	name=None
         use_epguides = False
+        banner=False
 
 	for opt,arg in args:
 		if opt in ["-n","--no-act"]:
@@ -429,6 +443,8 @@ if __name__=="__main__":
 			title=arg
 		elif opt in ["--name"]:
 			name=arg
+                elif opt in ["--fetch-banner"]:
+                        banner=True
 		elif opt in ["--expand"]:
 			expand_glob=1
 		elif opt in ["--no-expand"]:
@@ -453,9 +469,9 @@ if __name__=="__main__":
 
 	for i in files:
                 if use_epguides == False:
-                        process_file(i,title,name)
+                        process_file(i,title,name,banner)
                 else:
-                        process_file_epguides(i,title,name)
+                        process_file_epguides(i,title,name,banner)
 
 	save_cache(series_info)
 
