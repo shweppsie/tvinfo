@@ -153,7 +153,7 @@ class TheTVDBBackend:
                                         s.text = urlparse.urljoin("http://www.thetvdb.com/banners/", s.text.strip())
                                 d[s.tag.strip()] = s.text.strip()
                                 if debug:
-                                        print s.tag.strip(),"=",d[s.tag.strip()]
+					print "DEBUG:",s.tag.strip(),"=",d[s.tag.strip()]
                         r.append(d)
                 f.close()
                 return r

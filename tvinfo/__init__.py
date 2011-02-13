@@ -69,7 +69,7 @@ class TVFactory:
                         for series in _tv_series_cache.get(self.__backend_name, {}).keys():
                                 if series.lower().strip().find(seriesname.lower().strip()) != -1:
                                         if debug:
-                                                print "tv: Cache hit: ", series
+						print "DEBUG: tv: Cache hit: ", series
                                         results.append(_tv_series_cache[self.__backend_name][series])
                         if results:
                                 return results
