@@ -63,7 +63,6 @@ def save_cache(series_info):
 
 series_loaded_this_session=[]
 noact=0
-debug=0
 
 expando="%(fntitle)s - %(season)ix%(ep)02i - %(fnname)s.%(ext)s"
 
@@ -94,7 +93,7 @@ def unhtmlspecialchars(txt):
     ret = re.sub("(&#?[A-Za-z0-9]+;)", get_entity_char, txt)
     return ret.encode('utf8')
 
-def fetchpage(title):
+def fetchpage(title,debug=False):
 	url='http://epguides.com/%s/' % title
 
 	if debug:
@@ -152,7 +151,7 @@ def fetchpage(title):
 	if data=={} and suggest:
 		if debug:
 			print "DEBUG: Redirecting to",`suggest`
-		return fetchpage(suggest)
+		return fetchpage(suggest,debug)
 	if data=={}:
 		if debug:
 			print "DEBUG: No data found"
@@ -213,7 +212,7 @@ def series_patterns(name):
 
 	return ret
 
-def process_file(fname,title,outname,banner):
+def process_file(fname,title,outname,banner,debug=False):
         f = os.path.realpath(fname)
         dir = os.path.dirname(f)
         fname = os.path.basename(f)
@@ -297,18 +296,22 @@ def process_file(fname,title,outname,banner):
 			"name" : ep.get_title(),
 			"ext" : ext,
 			}
+
+        if debug:
+                print "DEBUG: %s" % repr(expando_values)
+
 	try:
 		fname=expando % expando_values
 	except KeyError, e:
 		print >>sys.stderr,"Unknown expando %s, known expandos: %s" % (",".join(e.args),",".join(expando_values.keys()))
 		sys.exit(1)
-	
+
 	# Just for good luck
 	fname=fname.strip()
 	fname=os.path.join(dir,fname)
 	rename(f,fname)
 
-def process_file_epguides(fname,title,outname):
+def process_file_epguides(fname,title,outname,debug=False):
 	f=os.path.realpath(fname)
 	dirn=os.path.dirname(f)
 	fname=os.path.basename(f)
@@ -339,7 +342,7 @@ def process_file_epguides(fname,title,outname):
 					break
 		else:
 			for name2 in series_patterns(name):
-				series_info[name2]=fetchpage(name2)
+				series_info[name2]=fetchpage(name2,debug)
 				series_loaded_this_session.append(name2)
 				if series_info[name2] is not None:
 					name=name2
@@ -421,7 +424,6 @@ if __name__=="__main__":
         args = parser.parse_args()
 
         noact = args.noact
-        debug=option = args.debug
 
         series_info=load_cache()
 
@@ -430,9 +432,9 @@ if __name__=="__main__":
 
 	for i in args.files:
                 if not args.use_epguides:
-                        process_file(i,args.title,args.name,args.banner)
+                        process_file(i,args.title,args.name,args.banner,args.debug)
                 else:
-                        process_file_epguides(i,args.title,args.name,args.banner)
+                        process_file_epguides(i,args.title,args.name,args.banner,args.debug)
 
 	save_cache(series_info)
 
