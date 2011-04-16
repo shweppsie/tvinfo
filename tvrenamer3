@@ -37,7 +37,7 @@ import urllib
 import sys
 import re
 import os
-import getopt
+import argparse
 import glob
 import pickle
 import htmlentitydefs
@@ -391,87 +391,42 @@ def process_file_epguides(fname,title,outname):
 	fname=os.path.join(dirn,fname)
 	rename(f,fname)
 
-def usage(argv0):
-	print "usage: %s [-n|--no-act] [--format=format] [--title=title] files...." % argv0
-	print
-	print "Renames files to their thetvdb.com name"
-	print
-	print "-n"
-	print "--no-act		Don't actually rename the files, just display what"
-	print "			what would be done"
-	print
-        print "--fetch-banner   Fetch banner and save it as banner.jpg"
-        print
-	print "--format=%s" % repr(expando)
-	print "			Format to rename to"
-	print
-	print "--title=title	The name of the show (overrides autodetection)"
-	print
-	print "--name=title	The name of the show to use in filenames"
-	print 
-	print "--expand		Expand globs internally"
-	print "--no-expand	Don't expand globs internally"
-        print "--epguides       Use the old epiguides backend."
-	sys.exit(1)
-
 if __name__=="__main__":
-	try:
-		args,files=getopt.gnu_getopt(sys.argv[1:],"nh",[
-			"no-act","format=","help","title=","expand","no-expand",
-			"name=","debug","epguides","fetch-banner"
-			])
-	except getopt.GetoptError, e:
-		print e
-		usage(sys.argv[0])
+        parser = argparse.ArgumentParser(description='Renames files to their thetvdb.com name')
 
-	if len(files)<1:
-		usage(sys.argv[0])
+        parser.add_argument('-n','--noact',dest='noact',action='store_true',default=False,
+                        help="Don't actually rename the files, just display what would be done")
+        parser.add_argument('--fetch-banner',dest='banner',action='store_true',default=False,
+                        help="Fetch banner and save it as banner.jpg")
+        parser.add_argument('--format',metavar=repr(expando),dest='expando',action='store',default=expando,
+                        help="Format to rename to")
+        parser.add_argument('--title',dest='title',action='store',default=None,
+                        help="The name of the show (overrides autodetection)")
+        parser.add_argument('--name',dest='name',action='store_true',default=None,
+                        help="The name of the show to use in the output filename")
+        parser.add_argument('--expand-globs',dest='expand_glob',metavar='True|False',type=bool,default=os.name!="posix",
+                        help="Override default for expanding globs internally")
+        parser.add_argument('--epguides',dest='use_epguides',action='store_true',default=False,
+                        help="Use old epguides backend")
+        parser.add_argument('--debug',dest='debug',action='store_true',default=False,
+                        help='Enable debug mode')
+        parser.add_argument('files',metavar='File',nargs='+')
 
-	expand_glob = os.name!="posix"
+        args = parser.parse_args()
 
-	title=None
-	name=None
-        use_epguides = False
-        banner=False
+        noact = args.noact
+        debug=option = args.debug
 
-	for opt,arg in args:
-		if opt in ["-n","--no-act"]:
-			noact=1
-		elif opt in ["--format"]:
-			expando=arg
-		elif opt in ["--title"]:
-			title=arg
-		elif opt in ["--name"]:
-			name=arg
-                elif opt in ["--fetch-banner"]:
-                        banner=True
-		elif opt in ["--expand"]:
-			expand_glob=1
-		elif opt in ["--no-expand"]:
-			expand_glob=0
-		elif opt in ["-h","--help"]:
-			usage(sys.argv[0])
-		elif opt in ["--debug"]:
-			debug=1
-                        tvinfo.debug = True
-                elif opt in ["--parsable"]:
-                        parsable=1
-                elif opt in ["--epguides"]:
-                        use_epguides=True
-		else:
-			print "Unknown option %s" % `opt`
-			usage(sys.argv[0])
+        series_info=load_cache()
 
-	series_info=load_cache()
+	if args.expand_glob:
+		arg.files=reduce(lambda a,b:a+b,[glob.glob(file) for file in args.files])
 
-	if expand_glob:
-		files=reduce(lambda a,b:a+b,[glob.glob(file) for file in files])
-
-	for i in files:
-                if use_epguides == False:
-                        process_file(i,title,name,banner)
+	for i in args.files:
+                if not args.use_epguides:
+                        process_file(i,args.title,args.name,args.banner)
                 else:
-                        process_file_epguides(i,title,name,banner)
+                        process_file_epguides(i,args.title,args.name,args.banner)
 
 	save_cache(series_info)
 
