@@ -403,7 +403,7 @@ if __name__=="__main__":
 
         parser.add_argument('-n','--noact',dest='noact',action='store_true',default=False,
                         help="Don't actually rename the files, just display what would be done")
-        parser.add_argument('--fetch-banner',metavar='FILENAME',dest='banner',default=False,
+        parser.add_argument('--fetch-banner',metavar='FILENAME',dest='banner',default=None,
                         help="Fetch banner and save it as FILENAME. Use this with -n to fetch the banner "
                         "and skip renaming")
         parser.add_argument('--format',metavar=repr(expando),dest='expando',action='store',default=expando,
