@@ -253,15 +253,20 @@ def process_file(fname,title,outname,banner):
                 print "Use --title to select a series"
                 return
 
-        if banner:
+        if banner != None:
+                banner = os.path.abspath(banner)
                 if debug:
                         print "DEBUG: Fetching Banner"
-                url = series.get_banner_uris()[0]
-                u = urllib2.urlopen(url)
-                image = open(dir+"/banner.jpg",'w')
-                image.write(u.read())
-                image.close()
-                u.close()
+                urls = series.get_banner_uris()
+                if urls < 1:
+                        print >>sys.stderr, "No Banner Found!"
+                else:
+                        url = urls[0]
+                        u = urllib2.urlopen(url)
+                        image = open(banner,'w')
+                        image.write(u.read())
+                        image.close()
+                        u.close()
 
         ep = series.get_episode(season = season, episode = episode)
 
@@ -396,8 +401,9 @@ if __name__=="__main__":
 
         parser.add_argument('-n','--noact',dest='noact',action='store_true',default=False,
                         help="Don't actually rename the files, just display what would be done")
-        parser.add_argument('--fetch-banner',dest='banner',action='store_true',default=False,
-                        help="Fetch banner and save it as banner.jpg")
+        parser.add_argument('--fetch-banner',metavar='FILENAME',dest='banner',default=False,
+                        help="Fetch banner and save it as FILENAME. Use this with -n to fetch the banner "
+                        "and skip renaming")
         parser.add_argument('--format',metavar=repr(expando),dest='expando',action='store',default=expando,
                         help="Format to rename to")
         parser.add_argument('--title',dest='title',action='store',default=None,
@@ -407,7 +413,7 @@ if __name__=="__main__":
         parser.add_argument('--expand-globs',dest='expand_glob',metavar='True|False',type=bool,default=os.name!="posix",
                         help="Override default for expanding globs internally")
         parser.add_argument('--epguides',dest='use_epguides',action='store_true',default=False,
-                        help="Use old epguides backend")
+                        help="Use old epguides backend (banner fetching not supported)")
         parser.add_argument('--debug',dest='debug',action='store_true',default=False,
                         help='Enable debug mode')
         parser.add_argument('files',metavar='File',nargs='+')
