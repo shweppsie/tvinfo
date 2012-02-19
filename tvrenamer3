@@ -164,7 +164,7 @@ def rename(f,t):
 	if f==t:
                 print "Source and Dest filename are the same, no renaming required"
 		return
-	print "%s: %s" % (os.path.basename(f),os.path.basename(t))
+	print "%s\n\t-> %s" % (os.path.basename(f),os.path.basename(t))
 	if noact:
 		return
 	if os.access(t,os.F_OK):
